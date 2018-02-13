@@ -50,8 +50,8 @@ Resources:
 
 Outputs:
   TargetGroup:
-    !Ref FGTargetGroup
+    Value: !Ref FGTargetGroup
   LoadBalancer:
-    !Ref ECSALB
+    Value: !Ref ECSALB
 
 
