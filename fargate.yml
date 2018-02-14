@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Create a load balancer that initially makes a config hc available for pinging through the 
+  load balancer, and to which additional services can be added.
+
+Parameters:
+  LoadBalancerTGArn:
+    Type: String
+
+  LBIngressSecurityGroup:
+    Type: String
+
+  PrivateSubnet1:
+    Type: String
+  
+  PrivateSubnet2:
+    Type: String
+
+Resources:
+
+  FGCluster:
+    Type: AWS::ECS::Cluster
+
+  CloudwatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['-', [ECSLogGroup, !Ref 'AWS::StackName']]
+      RetentionInDays: 14
+  
+
+  NginxTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        -
+          Name: nginx
+          Image: nginx:latest
+          Memory: 512
+          Cpu: 256
+          Essential: True
+          PortMappings:
+            -
+              ContainerPort: 80
+              Protocol: tcp
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'CloudwatchLogsGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: nginx
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !Join ['', ["arn:aws:iam::", !Ref 'AWS::AccountId', ":role/ecsTaskExecutionRole"]]
+      Family: "fargate-nginx"
+      Cpu: 256
+      Memory: 512
+
+  NginxService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref FGCluster
+      DesiredCount: '2'
+      LaunchType: FARGATE
+#      NetworkMode: awsvpc
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - !Ref LBIngressSecurityGroup
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+          
+
+      LoadBalancers:
+      - ContainerName: nginx
+        ContainerPort: '80'
+        TargetGroupArn: !Ref 'LoadBalancerTGArn'
+      TaskDefinition: !Ref 'NginxTask'
