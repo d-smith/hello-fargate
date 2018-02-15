@@ -2,7 +2,7 @@
 
 This project contains some cloud formation to spin up a fargate
 service that runs nginx in a container, fronted by a load
-balancer. This shows how Fargate ties into existings constructs
+balancer. This shows how Fargate ties into existing constructs
 such as VPCs and load balancers.
 
 To install:
