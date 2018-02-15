@@ -23,3 +23,13 @@ Resources:
         PublicSubnet1: !GetAtt VPC.Outputs.PublicSubnet1
         PublicSubnet2: !GetAtt VPC.Outputs.PublicSubnet2
         LBSecurityGroup: !GetAtt VPC.Outputs.WebIngressSecurityGroup
+
+  Fargate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join ['/', [!Ref BucketRoot, fargate.yml]]
+      Parameters:
+        LoadBalancerTGArn: !GetAtt LoadBalancer.Outputs.TargetGroup
+        LBIngressSecurityGroup: !GetAtt VPC.Outputs.LBIngressSecurityGroup
+        PrivateSubnet1: !GetAtt VPC.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt VPC.Outputs.PrivateSubnet2
