@@ -5,6 +5,23 @@ service that runs nginx in a container, fronted by a load
 balancer. This shows how Fargate ties into existings constructs
 such as VPCs and load balancers.
 
+To install:
+
+1. Copy the templates to a deployment bucket
+
+<pre>
+aws s3 cp . s3://deploy-bucket --exclude "*" --include "*.yml" --recursive
+</pre>
+
+2. Install the template
+
+<pre>
+aws cloudformation create-stack \
+--stack-name c1 \
+--template-body file://fgstack.yml \
+--parameters ParameterKey=BucketRoot,ParameterValue=https://s3.<region>.amazonaws.com/<bucket>
+</pre>
+
 Some links
 
 * [Fargate vis the CLI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html)

@@ -1,0 +1,25 @@
+Description: >
+  This template creates a complete fargate service example
+  with a VPC, a load balancer, and service based on the
+  nginx container.
+
+Parameters:
+  BucketRoot:
+      Type: String
+
+Resources:
+  VPC:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join ['/', [!Ref BucketRoot, vpc.yml]]
+
+  LoadBalancer:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join ['/', [!Ref BucketRoot, lb.yml]]
+      Parameters:
+        LoadBalancerName: !Sub "${AWS::StackName}-lb"
+        VpcId: !GetAtt VPC.Outputs.VpcId
+        PublicSubnet1: !GetAtt VPC.Outputs.PublicSubnet1
+        PublicSubnet2: !GetAtt VPC.Outputs.PublicSubnet2
+        LBSecurityGroup: !GetAtt VPC.Outputs.WebIngressSecurityGroup
