@@ -13,7 +13,7 @@ To install:
 aws s3 cp . s3://deploy-bucket --exclude "*" --include "*.yml" --recursive
 </pre>
 
-2. Install the template
+2. Install the stack
 
 <pre>
 aws cloudformation create-stack \
@@ -22,7 +22,7 @@ aws cloudformation create-stack \
 --parameters ParameterKey=BucketRoot,ParameterValue=https://s3.<region>.amazonaws.com/<bucket>
 </pre>
 
-After the stack is install, you can get the DNS name by first figuring out the load balancer stack name, then getting the dns name by looking at the stack outputs.
+After the stack is installed, you can get the DNS name by first figuring out the load balancer stack name, then getting the dns name by looking at the stack outputs.
 
 You can use the CLI to get stack names:
 
@@ -43,7 +43,7 @@ export http_proxy=proxyAddress
 curl dnsName
 </pre>
 
-Some usefule links
+Some useful links
 
 * [Fargate vis the CLI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html)
 * [Task Definitions for Fargate](https://aws.amazon.com/blogs/compute/migrating-your-amazon-ecs-containers-to-aws-fargate/)
